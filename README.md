@@ -174,6 +174,4 @@ Place images under `./docs/screenshots/` (or update paths accordingly):
 
 ---
 
-## 📄 License
 
-MIT
