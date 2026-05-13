@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Pink chiffon party saree">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1">
+      <stop offset="0" stop-color="#f7d7e6"/>
+      <stop offset="1" stop-color="#8a0f3d"/>
+    </linearGradient>
+    <linearGradient id="cloth" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff78ad"/>
+      <stop offset=".6" stop-color="#d31367"/>
+      <stop offset="1" stop-color="#7c0a38"/>
+    </linearGradient>
+    <pattern id="sequins" width="38" height="38" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="3" fill="#fff7c2" opacity=".8"/>
+      <circle cx="30" cy="26" r="2" fill="#ffffff" opacity=".7"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <path d="M283 82c84 29 105 117 52 238l-48 111 162 291H139l127-294-58-111c-56-107-31-206 75-235Z" fill="url(#cloth)" opacity=".95"/>
+  <path d="M132 612h317v94H132zM222 126h148v52H222z" fill="url(#sequins)"/>
+  <path d="M222 126h148M132 612h317" stroke="#f9d86e" stroke-width="8"/>
+  <path d="M242 192c58 90 65 204 25 356" fill="none" stroke="#fff" stroke-width="16" opacity=".18"/>
+  <circle cx="300" cy="70" r="39" fill="#8d5a3c"/>
+  <path d="M256 67c14-44 74-51 96 2-35-16-65-16-96-2Z" fill="#2b1219"/>
+</svg>

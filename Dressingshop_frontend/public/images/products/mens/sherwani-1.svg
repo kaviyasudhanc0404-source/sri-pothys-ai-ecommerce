@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Wedding gold men's sherwani">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1">
+      <stop offset="0" stop-color="#f6e7bd"/>
+      <stop offset="1" stop-color="#463011"/>
+    </linearGradient>
+    <linearGradient id="coat" x1="0" x2="1">
+      <stop offset="0" stop-color="#d6b46b"/>
+      <stop offset=".52" stop-color="#f0d995"/>
+      <stop offset="1" stop-color="#9b6d28"/>
+    </linearGradient>
+    <pattern id="emb" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M21 7c9 10 9 18 0 28-9-10-9-18 0-28Z" fill="#fff5c9" opacity=".6"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <circle cx="300" cy="78" r="42" fill="#87583f"/>
+  <path d="M253 77c17-48 83-50 99 1-35-15-67-16-99-1Z" fill="#201215"/>
+  <path d="M205 145h190l48 505H157z" fill="url(#coat)"/>
+  <path d="M230 172h140v416H230z" fill="url(#emb)"/>
+  <path d="M300 145v505M246 145c29 64 36 129 16 196M354 145c-29 64-36 129-16 196" stroke="#805416" stroke-width="7" opacity=".75"/>
+  <path d="M158 650h284v54H158z" fill="#7b501d" opacity=".35"/>
+  <path d="M205 145h190M158 650h284" stroke="#fff1b3" stroke-width="8"/>
+</svg>

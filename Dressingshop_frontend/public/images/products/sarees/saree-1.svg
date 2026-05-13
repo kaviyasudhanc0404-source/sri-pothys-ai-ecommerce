@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Royal blue silk saree">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#102a5c"/>
+      <stop offset="1" stop-color="#6e1037"/>
+    </linearGradient>
+    <linearGradient id="silk" x1="0" x2="1">
+      <stop offset="0" stop-color="#143d8f"/>
+      <stop offset=".55" stop-color="#2458b6"/>
+      <stop offset="1" stop-color="#071d54"/>
+    </linearGradient>
+    <pattern id="zari" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M0 18h36M18 0v36" stroke="#f4c95d" stroke-width="2" opacity=".55"/>
+      <circle cx="18" cy="18" r="4" fill="#f6d36e" opacity=".8"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <ellipse cx="300" cy="770" rx="260" ry="48" fill="#140817" opacity=".3"/>
+  <path d="M288 78c72 18 99 84 85 165l-36 215 116 272H116l122-279-34-209c-15-90 13-146 84-164Z" fill="url(#silk)"/>
+  <path d="M240 120c-23 68-5 156 34 252 37 91 49 174-14 330" fill="none" stroke="#ffffff" stroke-width="18" opacity=".15"/>
+  <path d="M126 642h327v76H126zM215 92h145v54H215z" fill="url(#zari)"/>
+  <path d="M128 642h325M215 146h145" stroke="#f6d36e" stroke-width="9"/>
+  <circle cx="300" cy="72" r="42" fill="#7b4a34"/>
+  <path d="M252 74c11-51 86-54 101-4-35-13-65-10-101 4Z" fill="#211116"/>
+  <path d="M252 180c30 34 67 36 106 0" fill="none" stroke="#f4c95d" stroke-width="14" stroke-linecap="round"/>
+</svg>

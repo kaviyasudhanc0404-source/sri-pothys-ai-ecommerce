@@ -1,0 +1,26 @@
+<svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="600" height="800" fill="#F3F8FF"/>
+  <rect x="70" y="70" width="460" height="660" rx="36" fill="#DCEBFF"/>
+  <rect x="180" y="120" width="240" height="126" rx="60" fill="#BAD6FF"/>
+  <path d="M205 230H395C429 230 458 259 458 293V628C458 666 426 698 388 698H212C174 698 142 666 142 628V293C142 259 171 230 205 230Z" fill="#2E78D6"/>
+  <path d="M218 230L172 320L222 346L262 260L218 230Z" fill="#2E78D6"/>
+  <path d="M382 230L428 320L378 346L338 260L382 230Z" fill="#2E78D6"/>
+  <rect x="278" y="252" width="44" height="314" rx="20" fill="#F8FBFF"/>
+  <path d="M214 360C242 330 271 318 300 318C329 318 358 330 386 360V620H214V360Z" fill="#4A93F2"/>
+  <g stroke="#F5D36B" stroke-width="8" stroke-linecap="round">
+    <path d="M233 338L258 364"/>
+    <path d="M258 338L233 364"/>
+    <path d="M342 338L367 364"/>
+    <path d="M367 338L342 364"/>
+    <path d="M233 418L258 444"/>
+    <path d="M258 418L233 444"/>
+    <path d="M342 418L367 444"/>
+    <path d="M367 418L342 444"/>
+    <path d="M233 498L258 524"/>
+    <path d="M258 498L233 524"/>
+    <path d="M342 498L367 524"/>
+    <path d="M367 498L342 524"/>
+  </g>
+  <rect x="252" y="282" width="96" height="30" rx="14" fill="#F5D36B"/>
+  <text x="300" y="760" text-anchor="middle" fill="#1C4278" font-size="30" font-family="Georgia, serif">Ethnic Designer Kurti</text>
+</svg>

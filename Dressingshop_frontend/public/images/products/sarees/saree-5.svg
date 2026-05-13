@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Red pattu saree temple border">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1">
+      <stop offset="0" stop-color="#8c0b16"/>
+      <stop offset="1" stop-color="#f0b44d"/>
+    </linearGradient>
+    <linearGradient id="cloth" x1="0" x2="1">
+      <stop offset="0" stop-color="#a30e1d"/>
+      <stop offset=".5" stop-color="#df2634"/>
+      <stop offset="1" stop-color="#6f0712"/>
+    </linearGradient>
+    <pattern id="temple" width="52" height="44" patternUnits="userSpaceOnUse">
+      <path d="M0 44 13 12l13 32 13-32 13 32" fill="#f4c85f"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <path d="M293 78c84 27 105 111 63 222l-50 132 140 293H124l131-293-49-134C166 188 196 101 293 78Z" fill="url(#cloth)"/>
+  <rect x="124" y="626" width="322" height="82" fill="url(#temple)"/>
+  <rect x="214" y="116" width="162" height="58" fill="url(#temple)"/>
+  <path d="M124 626h322M124 708h322M214 116h162M214 174h162" stroke="#ffe078" stroke-width="8"/>
+  <circle cx="300" cy="67" r="40" fill="#8f5a3d"/>
+  <path d="M254 66c15-46 82-54 99 1-35-15-68-15-99-1Z" fill="#251114"/>
+</svg>

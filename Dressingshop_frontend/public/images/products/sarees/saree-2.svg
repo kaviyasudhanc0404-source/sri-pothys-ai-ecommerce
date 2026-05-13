@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Maroon gold Banarasi silk saree">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#4a071f"/>
+      <stop offset="1" stop-color="#16040d"/>
+    </linearGradient>
+    <linearGradient id="cloth" x1="0" x2="1">
+      <stop offset="0" stop-color="#8f1239"/>
+      <stop offset=".5" stop-color="#c2184a"/>
+      <stop offset="1" stop-color="#5c0826"/>
+    </linearGradient>
+    <pattern id="motif" width="54" height="54" patternUnits="userSpaceOnUse">
+      <path d="M27 7c13 14 13 26 0 40C14 33 14 21 27 7Z" fill="#f2c65b" opacity=".65"/>
+      <circle cx="27" cy="27" r="3" fill="#fff1a8"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <path d="M313 70c74 35 92 109 55 218l-44 129 131 306H119l132-306-43-130C170 172 195 100 275 70Z" fill="url(#cloth)"/>
+  <path d="M124 630h331v90H124zM210 114h170v64H210z" fill="url(#motif)"/>
+  <path d="M124 630h331M124 720h331M210 114h170M210 178h170" stroke="#ffd66b" stroke-width="10"/>
+  <path d="M273 92c28 22 57 22 87 0" fill="none" stroke="#ffd66b" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="300" cy="63" r="40" fill="#875334"/>
+  <path d="M251 62c18-52 89-51 104 4-40-17-71-17-104-4Z" fill="#1a0d12"/>
+</svg>

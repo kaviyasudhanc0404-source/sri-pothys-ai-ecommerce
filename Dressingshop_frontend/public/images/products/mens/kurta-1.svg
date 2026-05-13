@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Festival gold silk kurta set">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1">
+      <stop offset="0" stop-color="#f9e8ad"/>
+      <stop offset="1" stop-color="#6f3d10"/>
+    </linearGradient>
+    <linearGradient id="kurta" x1="0" x2="1">
+      <stop offset="0" stop-color="#f4cb61"/>
+      <stop offset=".55" stop-color="#d89a24"/>
+      <stop offset="1" stop-color="#8d5514"/>
+    </linearGradient>
+    <pattern id="print" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M20 8c8 8 8 16 0 24-8-8-8-16 0-24Z" fill="#fff0a8" opacity=".55"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <circle cx="300" cy="78" r="42" fill="#8a5a3d"/>
+  <path d="M253 77c17-48 82-50 99 1-35-15-66-16-99-1Z" fill="#241314"/>
+  <path d="M210 145h180l45 465H165z" fill="url(#kurta)"/>
+  <path d="M235 170h130v390H235z" fill="url(#print)"/>
+  <path d="M300 145v465M255 145v95h90v-95" stroke="#7c3d14" stroke-width="8" opacity=".65"/>
+  <path d="M165 610h270v76H165z" fill="#f3d276"/>
+  <path d="M210 145h180M165 610h270" stroke="#fff0a8" stroke-width="8"/>
+</svg>

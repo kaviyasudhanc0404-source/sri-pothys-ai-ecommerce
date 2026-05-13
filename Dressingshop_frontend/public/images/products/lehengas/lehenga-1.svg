@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Bridal pink designer lehenga">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#fee1ec"/>
+      <stop offset="1" stop-color="#9c1748"/>
+    </linearGradient>
+    <linearGradient id="skirt" x1="0" x2="1">
+      <stop offset="0" stop-color="#f59fbd"/>
+      <stop offset=".5" stop-color="#e54283"/>
+      <stop offset="1" stop-color="#9b124d"/>
+    </linearGradient>
+    <pattern id="mirror" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="5" fill="#fff7c8" stroke="#c6902e" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <circle cx="300" cy="76" r="40" fill="#8f5d42"/>
+  <path d="M255 73c16-44 79-49 98 1-35-14-66-15-98-1Z" fill="#2d1419"/>
+  <path d="M233 135h134l-20 160H253z" fill="#c01863"/>
+  <path d="M250 137h100v56H250z" fill="url(#mirror)"/>
+  <path d="M250 300 102 724h396L350 300z" fill="url(#skirt)"/>
+  <path d="M112 688h376v35H112zM157 584h286v34H157z" fill="url(#mirror)"/>
+  <path d="M252 300 198 724M300 300v424M348 300l54 424" stroke="#fff7c8" stroke-width="6" opacity=".45"/>
+  <path d="M233 135h134M250 300h100" stroke="#f4c95d" stroke-width="8"/>
+</svg>

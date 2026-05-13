@@ -1,0 +1,27 @@
+<svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="600" height="800" fill="#FFF7F4"/>
+  <rect x="70" y="70" width="460" height="660" rx="36" fill="#FFE1EA"/>
+  <rect x="185" y="120" width="230" height="120" rx="58" fill="#F8C7D8"/>
+  <path d="M210 230H390C424 230 452 258 452 292V625C452 664 420 696 381 696H219C180 696 148 664 148 625V292C148 258 176 230 210 230Z" fill="#FF7BA3"/>
+  <path d="M224 230L182 315L228 338L264 262L224 230Z" fill="#FF7BA3"/>
+  <path d="M376 230L418 315L372 338L336 262L376 230Z" fill="#FF7BA3"/>
+  <rect x="282" y="255" width="36" height="300" rx="18" fill="#FFD5E2"/>
+  <circle cx="300" cy="310" r="10" fill="#FFF7F4"/>
+  <circle cx="300" cy="360" r="10" fill="#FFF7F4"/>
+  <circle cx="300" cy="410" r="10" fill="#FFF7F4"/>
+  <circle cx="300" cy="460" r="10" fill="#FFF7F4"/>
+  <path d="M205 360C232 330 268 318 300 318C332 318 368 330 395 360V620H205V360Z" fill="#FF9ABB"/>
+  <g fill="#FFF1A8" opacity="0.95">
+    <circle cx="214" cy="342" r="10"/>
+    <circle cx="248" cy="382" r="8"/>
+    <circle cx="204" cy="430" r="7"/>
+    <circle cx="260" cy="468" r="9"/>
+    <circle cx="220" cy="520" r="8"/>
+    <circle cx="385" cy="346" r="10"/>
+    <circle cx="344" cy="394" r="7"/>
+    <circle cx="394" cy="450" r="8"/>
+    <circle cx="338" cy="492" r="9"/>
+    <circle cx="382" cy="544" r="8"/>
+  </g>
+  <text x="300" y="760" text-anchor="middle" fill="#7B2146" font-size="30" font-family="Georgia, serif">Floral Cotton Kurti</text>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Ivory Mysore silk saree">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff7dd"/>
+      <stop offset="1" stop-color="#d8b76a"/>
+    </linearGradient>
+    <linearGradient id="cloth" x1="0" x2="1">
+      <stop offset="0" stop-color="#fff5d4"/>
+      <stop offset=".65" stop-color="#f5dea4"/>
+      <stop offset="1" stop-color="#c79b46"/>
+    </linearGradient>
+    <pattern id="border" width="42" height="42" patternUnits="userSpaceOnUse">
+      <circle cx="21" cy="21" r="8" fill="none" stroke="#bd7b25" stroke-width="3"/>
+      <circle cx="21" cy="21" r="2" fill="#bd7b25"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <path d="M290 76c78 30 101 105 62 220l-46 135 139 296H128l130-296-49-135c-42-116-14-190 81-220Z" fill="url(#cloth)"/>
+  <rect x="128" y="630" width="317" height="82" fill="url(#border)"/>
+  <rect x="220" y="118" width="154" height="54" fill="url(#border)"/>
+  <path d="M128 630h317M128 712h317M220 118h154" stroke="#bd7b25" stroke-width="8"/>
+  <path d="M242 180c46 72 55 171 25 308" fill="none" stroke="#fff" stroke-width="16" opacity=".32"/>
+  <circle cx="300" cy="67" r="39" fill="#8f5a40"/>
+  <path d="M254 65c16-47 83-50 98 2-34-15-67-15-98-2Z" fill="#2b1717"/>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Royal purple Anarkali suit">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ead8ff"/>
+      <stop offset="1" stop-color="#3b0c54"/>
+    </linearGradient>
+    <linearGradient id="dress" x1="0" x2="1">
+      <stop offset="0" stop-color="#8b3fc1"/>
+      <stop offset=".55" stop-color="#5a1581"/>
+      <stop offset="1" stop-color="#2b063e"/>
+    </linearGradient>
+    <pattern id="gold" width="44" height="44" patternUnits="userSpaceOnUse">
+      <circle cx="22" cy="22" r="5" fill="#f6d36e" opacity=".7"/>
+      <path d="M22 8v28M8 22h28" stroke="#f6d36e" stroke-width="2" opacity=".5"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <circle cx="300" cy="76" r="42" fill="#8b5b40"/>
+  <path d="M253 75c16-46 83-51 99 2-35-15-67-16-99-2Z" fill="#221018"/>
+  <path d="M230 138h140l-18 170H248z" fill="#5a1581"/>
+  <path d="M250 310 112 724h376L350 310z" fill="url(#dress)"/>
+  <path d="M134 660h332v56H134zM230 138h140v46H230z" fill="url(#gold)"/>
+  <path d="M250 310h100M134 660h332M230 138h140" stroke="#f6d36e" stroke-width="8"/>
+  <path d="M250 310 206 724M300 310v414M350 310l44 414" stroke="#ffffff" stroke-width="6" opacity=".16"/>
+</svg>

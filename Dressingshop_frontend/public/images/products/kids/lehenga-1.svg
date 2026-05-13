@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Kids pink lehenga">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff1f7"/>
+      <stop offset="1" stop-color="#f6a7c5"/>
+    </linearGradient>
+    <linearGradient id="dress" x1="0" x2="1">
+      <stop offset="0" stop-color="#ff9ccc"/>
+      <stop offset=".5" stop-color="#f04f9a"/>
+      <stop offset="1" stop-color="#bf1a67"/>
+    </linearGradient>
+    <pattern id="flowers" width="38" height="38" patternUnits="userSpaceOnUse">
+      <circle cx="19" cy="19" r="4" fill="#ffef91"/>
+      <circle cx="14" cy="19" r="4" fill="#fff"/>
+      <circle cx="24" cy="19" r="4" fill="#fff"/>
+      <circle cx="19" cy="14" r="4" fill="#fff"/>
+      <circle cx="19" cy="24" r="4" fill="#fff"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <circle cx="300" cy="95" r="45" fill="#8a5c43"/>
+  <path d="M250 92c16-50 86-56 105 2-38-17-72-17-105-2Z" fill="#2b1717"/>
+  <path d="M242 160h116l-16 132H258z" fill="#da2d7a"/>
+  <path d="M258 294 126 716h348L342 294z" fill="url(#dress)"/>
+  <path d="M146 650h308v52H146zM242 160h116v42H242z" fill="url(#flowers)"/>
+  <path d="M258 294h84M146 650h308" stroke="#f4c95d" stroke-width="8"/>
+</svg>

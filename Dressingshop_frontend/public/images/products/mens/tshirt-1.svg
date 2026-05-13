@@ -1,0 +1,17 @@
+<svg width="800" height="1000" viewBox="0 0 800 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="1000" rx="48" fill="#F8F3EB"/>
+  <rect x="60" y="60" width="680" height="880" rx="40" fill="#FFF8EF"/>
+  <path d="M315 165C315 118.056 353.056 80 400 80C446.944 80 485 118.056 485 165V210H315V165Z" fill="#B71234"/>
+  <path d="M247 196L315 150L350 225H450L485 150L553 196L642 301L560 355L514 286V835C514 860.405 493.405 881 468 881H332C306.595 881 286 860.405 286 835V286L240 355L158 301L247 196Z" fill="#C8153A"/>
+  <path d="M315 150C315 196.944 353.056 235 400 235C446.944 235 485 196.944 485 150" fill="#8A0F2B"/>
+  <rect x="350" y="318" width="100" height="120" rx="18" fill="#F7D36A" fill-opacity="0.18"/>
+  <path d="M398.708 354.136L423.394 403.508L368.022 403.508L398.708 354.136Z" fill="#F7D36A"/>
+  <circle cx="312" cy="490" r="17" fill="#F7D36A"/>
+  <circle cx="488" cy="490" r="17" fill="#F7D36A"/>
+  <circle cx="312" cy="615" r="17" fill="#F7D36A"/>
+  <circle cx="488" cy="615" r="17" fill="#F7D36A"/>
+  <circle cx="400" cy="705" r="17" fill="#F7D36A"/>
+  <path d="M254 214L314 174" stroke="#8A0F2B" stroke-width="16" stroke-linecap="round"/>
+  <path d="M546 214L486 174" stroke="#8A0F2B" stroke-width="16" stroke-linecap="round"/>
+  <text x="400" y="930" text-anchor="middle" fill="#7A1528" font-family="Georgia, serif" font-size="38" font-weight="700">Classic T-Shirt</text>
+</svg>
