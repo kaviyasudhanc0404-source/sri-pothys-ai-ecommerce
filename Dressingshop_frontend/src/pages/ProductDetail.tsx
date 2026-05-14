@@ -234,9 +234,9 @@ const ProductDetail = () => {
                 <span className="absolute top-4 left-4 px-3 py-1.5 rounded-full gradient-gold text-xs font-bold text-maroon-dark">{product.badge}</span>
               )}
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-primary cursor-pointer transition-colors">
+                <div key={item} className="aspect-square min-w-0 rounded-xl overflow-hidden border-2 border-transparent hover:border-primary cursor-pointer transition-colors">
                   <img
                     src={productImage}
                     alt=""
