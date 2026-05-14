@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, AlertCircle, Loader, CheckCircle, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -35,10 +36,11 @@ const Login = () => {
       } else {
         navigate("/", { replace: true });
       }
-    } catch (error: any) {
-      setError(error.message || "Login failed. Please check your credentials.");
+    } catch (error) {
+      const message = getErrorMessage(error) || "Login failed. Please check your credentials.";
+      setError(message);
       toast.error("Login Failed", {
-        description: error.message || "Please check your credentials and try again.",
+        description: message || "Please check your credentials and try again.",
       });
     }
   };

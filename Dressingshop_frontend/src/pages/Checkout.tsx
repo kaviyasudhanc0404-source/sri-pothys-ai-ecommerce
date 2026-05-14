@@ -6,6 +6,7 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { apiRequest } from "@/services/api";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 
 type CheckoutItem = {
   productKey: string;
@@ -106,7 +107,7 @@ const Checkout = () => {
 
     setPlacingOrder(true);
     try {
-      const data = await apiRequest<{ order: any }>("/orders", {
+      const data = await apiRequest<{ order: unknown }>("/orders", {
         method: "POST",
         token,
         body: JSON.stringify({
@@ -130,9 +131,9 @@ const Checkout = () => {
 
       toast.success("Order placed successfully");
       navigate("/order-success", { state: { order: data?.order } });
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Order could not be placed", {
-        description: error.message || "Please try again.",
+        description: getErrorMessage(error) || "Please try again.",
       });
     } finally {
       setPlacingOrder(false);

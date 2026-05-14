@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Lock, Phone, AlertCircle, Loader, UserPlus, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -47,10 +48,11 @@ const Signup = () => {
         description: "Welcome to Sri Pothys!",
       });
       navigate("/");
-    } catch (error: any) {
-      setError(error.message || "Registration failed. Please try again.");
+    } catch (error) {
+      const message = getErrorMessage(error) || "Registration failed. Please try again.";
+      setError(message);
       toast.error("Registration Failed", {
-        description: error.message || "Please try again.",
+        description: message || "Please try again.",
       });
     }
   };

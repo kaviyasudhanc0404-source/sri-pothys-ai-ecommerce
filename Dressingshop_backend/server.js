@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/database.js";
+import { getAllowedOrigins, validateEnv } from "./config/env.js";
 import { errorHandler, corsHeaders } from "./middleware/auth.js";
 
 // Routes
@@ -10,22 +11,27 @@ import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import chatbotRoutes from "./routes/chatbotRoutes.js";
 
 // Load environment variables
 dotenv.config();
+validateEnv();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = getAllowedOrigins();
 
 // Middleware
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:8080",
-      "http://localhost:3000",
-      process.env.CORS_ORIGIN
-    ].filter(Boolean),
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS blocked origin: ${origin}`));
+    },
     credentials: true,
   })
 );
@@ -42,6 +48,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/chatbot", chatbotRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -60,5 +67,5 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`CORS Origin: ${process.env.CORS_ORIGIN || "http://localhost:5173"}`);
+  console.log(`Allowed CORS origins: ${allowedOrigins.join(", ")}`);
 });

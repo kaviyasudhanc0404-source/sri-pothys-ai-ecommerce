@@ -93,6 +93,10 @@ export const getOrders = async (req, res) => {
 
 export const getOrderById = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "Invalid order id" });
+    }
+
     const order = await Order.findById(req.params.id);
 
     if (!order) {
@@ -116,6 +120,10 @@ export const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const validStatuses = ["Ordered", "Processing", "Shipped", "Delivered", "Cancelled"];
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "Invalid order id" });
+    }
 
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: "Invalid order status" });

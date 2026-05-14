@@ -11,6 +11,9 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1200,
+  },
   plugins: [react()],
   resolve: {
     alias: {

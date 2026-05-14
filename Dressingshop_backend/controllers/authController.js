@@ -4,13 +4,14 @@ import { generateToken, validateEmail, validatePassword } from "../utils/helpers
 export const register = async (req, res) => {
   try {
     const { firstName, lastName, email, password, phone } = req.body;
+    const normalizedEmail = String(email || "").trim().toLowerCase();
 
     // Validation
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    if (!validateEmail(email)) {
+    if (!validateEmail(normalizedEmail)) {
       return res.status(400).json({ error: "Invalid email format" });
     }
 
@@ -19,18 +20,18 @@ export const register = async (req, res) => {
     }
 
     // Check if user exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(409).json({ error: "User already exists" });
     }
 
     // Create new user
     const user = new User({
-      firstName,
-      lastName,
-      email,
+      firstName: String(firstName).trim(),
+      lastName: String(lastName).trim(),
+      email: normalizedEmail,
       password,
-      phone,
+      phone: phone ? String(phone).trim() : undefined,
     });
 
     await user.save();
@@ -58,6 +59,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = String(email || "").trim().toLowerCase();
 
     // Validation
     if (!email || !password) {
@@ -65,7 +67,7 @@ export const login = async (req, res) => {
     }
 
     // Find user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }

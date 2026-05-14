@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, ArrowRight } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, totalPrice, totalItems, isLoading } = useCart();
@@ -10,9 +11,9 @@ const Cart = () => {
   const handleQuantityChange = async (itemId: string, quantity: number) => {
     try {
       await updateQuantity(itemId, quantity);
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Cart update failed", {
-        description: error.message || "Please try again.",
+        description: getErrorMessage(error) || "Please try again.",
       });
     }
   };
@@ -21,9 +22,9 @@ const Cart = () => {
     try {
       await removeFromCart(itemId);
       toast.success("Item removed from cart");
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Could not remove item", {
-        description: error.message || "Please try again.",
+        description: getErrorMessage(error) || "Please try again.",
       });
     }
   };

@@ -7,6 +7,7 @@ import QuickPreviewModal from "@/components/QuickPreviewModal";
 import { Product } from "@/data/products";
 import { fetchProducts } from "@/services/productCatalog";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 
 const colorOptions = ["Red", "Blue", "Maroon", "Pink", "Gold", "Green", "Purple", "Cream", "Black", "White", "Beige", "Khaki", "Multi"];
 
@@ -37,10 +38,10 @@ const Products = () => {
       try {
         const liveProducts = await fetchProducts();
         if (!cancelled) setProducts(liveProducts);
-      } catch (error: any) {
+      } catch (error) {
         if (!cancelled) {
           toast.error("Could not load products", {
-            description: error.message || "Please refresh and try again.",
+            description: getErrorMessage(error) || "Please refresh and try again.",
           });
         }
       } finally {
@@ -65,7 +66,7 @@ const Products = () => {
   };
 
   const filtered = useMemo(() => {
-    let result = products.filter((product) => {
+    const result = products.filter((product) => {
       if (product.price < priceRange[0] || product.price > priceRange[1]) return false;
       if (selectedColors.length && !selectedColors.includes(product.color)) return false;
       if (selectedCategories.length && !selectedCategories.includes(product.category)) return false;

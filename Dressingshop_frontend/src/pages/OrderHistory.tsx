@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { apiRequest } from "@/services/api";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 
 type OrderItem = {
   productKey?: string;
@@ -53,10 +54,10 @@ const OrderHistory = () => {
           token,
         });
         if (!cancelled) setOrders(data?.orders ?? []);
-      } catch (error: any) {
+      } catch (error) {
         if (!cancelled) {
           toast.error("Could not load orders", {
-            description: error.message || "Please try again.",
+            description: getErrorMessage(error) || "Please try again.",
           });
         }
       } finally {

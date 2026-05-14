@@ -7,6 +7,19 @@ import { useWishlist } from "@/context/WishlistContext";
 import { useAuth } from "@/context/AuthContext";
 import ProductCard from "@/components/ProductCard";
 import { apiRequest } from "@/services/api";
+import { getErrorMessage } from "@/lib/utils";
+
+type ProfileApiUser = {
+  id?: string;
+  _id?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: "user" | "admin";
+  phone?: string;
+  dateOfBirth?: string;
+  gender?: "Male" | "Female" | "Other";
+};
 
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
@@ -86,13 +99,13 @@ const Profile = () => {
 
     const loadProfile = async () => {
       try {
-        const data = await apiRequest<{ user: any }>("/auth/profile", { token });
+        const data = await apiRequest<{ user: ProfileApiUser }>("/auth/profile", { token });
         if (!cancelled && data?.user) {
-          updateUser({ ...data.user, id: data.user.id || data.user._id });
+          updateUser({ ...data.user, id: String(data.user.id || data.user._id) });
         }
-      } catch (error: any) {
+      } catch (error) {
         if (!cancelled) {
-          toast.error("Could not load profile", { description: error.message || "Please refresh and try again." });
+          toast.error("Could not load profile", { description: getErrorMessage(error) || "Please refresh and try again." });
         }
       }
     };
@@ -123,9 +136,9 @@ const Profile = () => {
       try {
         const data = await apiRequest<{ addresses: AddressRecord[] }>("/users/addresses", { token });
         if (!cancelled) setAddresses(data?.addresses || []);
-      } catch (error: any) {
+      } catch (error) {
         if (!cancelled) {
-          toast.error("Could not load addresses", { description: error.message || "Please try again." });
+          toast.error("Could not load addresses", { description: getErrorMessage(error) || "Please try again." });
         }
       }
     };
@@ -153,7 +166,7 @@ const Profile = () => {
 
     setIsSavingProfile(true);
     try {
-      const data = await apiRequest<{ user: any }>("/auth/profile", {
+      const data = await apiRequest<{ user: ProfileApiUser }>("/auth/profile", {
         method: "PUT",
         token,
         body: JSON.stringify({
@@ -164,11 +177,11 @@ const Profile = () => {
           gender: profileForm.gender,
         }),
       });
-      const savedUser = { ...(data?.user || user), id: data?.user?.id || data?.user?._id || user.id };
+      const savedUser = { ...(data?.user || user), id: String(data?.user?.id || data?.user?._id || user.id) };
       updateUser(savedUser);
       toast.success("Profile updated");
-    } catch (error: any) {
-      toast.error("Could not update profile", { description: error.message || "Please try again." });
+    } catch (error) {
+      toast.error("Could not update profile", { description: getErrorMessage(error) || "Please try again." });
     } finally {
       setIsSavingProfile(false);
     }
@@ -205,8 +218,8 @@ const Profile = () => {
       setAddressForm(emptyAddressForm);
       setShowAddressForm(false);
       toast.success("Address saved");
-    } catch (error: any) {
-      toast.error("Could not save address", { description: error.message || "Please try again." });
+    } catch (error) {
+      toast.error("Could not save address", { description: getErrorMessage(error) || "Please try again." });
     } finally {
       setIsSavingAddress(false);
     }
@@ -218,8 +231,8 @@ const Profile = () => {
       await apiRequest(`/users/addresses/${addressId}`, { method: "DELETE", token });
       setAddresses((current) => current.filter((addr) => addr._id !== addressId));
       toast.success("Address deleted");
-    } catch (error: any) {
-      toast.error("Could not delete address", { description: error.message || "Please try again." });
+    } catch (error) {
+      toast.error("Could not delete address", { description: getErrorMessage(error) || "Please try again." });
     }
   };
 

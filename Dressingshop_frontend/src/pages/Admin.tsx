@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ElementType } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LayoutDashboard, ShoppingBag, Package, Users, BarChart3, Settings, Plus, Pencil, Trash2, DollarSign, Boxes, ChevronLeft, ChevronRight, LogOut, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { apiRequest } from "@/services/api";
 import { safeStorage } from "@/lib/storage";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 
 const tabs = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -24,7 +25,164 @@ const statusColors: Record<string, string> = {
   Cancelled: "text-destructive bg-destructive/10",
 };
 
-const emptyProduct = { name: "", price: "0", originalPrice: "0", image: "", category: "Sarees", occasion: "Wedding", color: "Blue", size: "Free Size", rating: "4.5", reviews: "0", description: "", badge: "", stock: "100", sku: "", isNew: false };
+type AdminDashboardStats = {
+  totalRevenue: number;
+  orders: number;
+  customers: number;
+  products: number;
+  activeCustomers?: number;
+};
+
+type AdminMonthlyRevenueEntry = {
+  month: string;
+  revenue: number;
+};
+
+type AdminRecentOrder = {
+  id: string;
+  _id: string;
+  customer: string;
+  amount: number;
+  status: string;
+  date: string;
+};
+
+type AdminDashboardData = {
+  stats: AdminDashboardStats;
+  monthlyRevenue: AdminMonthlyRevenueEntry[];
+  recentOrders: AdminRecentOrder[];
+};
+
+type AdminAnalyticsOverview = {
+  totalRevenue: number;
+  averageOrderValue: number;
+  totalOrders: number;
+  totalProducts: number;
+  totalCustomers: number;
+};
+
+type AdminTopProduct = {
+  name: string;
+  quantity: number;
+  revenue: number;
+};
+
+type AdminAnalyticsData = {
+  overview: AdminAnalyticsOverview;
+  orderStatusBreakdown: Record<string, number>;
+  categoryBreakdown: Record<string, number>;
+  topProducts: AdminTopProduct[];
+  recentUsers?: Array<{ id: string; joinedAt: string; isActive?: boolean; lastLoginAt?: string }>;
+};
+
+type AdminProduct = {
+  _id: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  image: string;
+  category: string;
+  occasion: string;
+  color: string;
+  size: string[];
+  rating: number;
+  reviews: number;
+  description?: string;
+  badge?: string;
+  stock?: number;
+  sku?: string;
+  isNew?: boolean;
+};
+
+type AdminOrderItem = {
+  name: string;
+  quantity: number;
+};
+
+type AdminOrder = {
+  _id: string;
+  orderId?: string;
+  orderStatus: string;
+  createdAt: string;
+  total: number;
+  items?: AdminOrderItem[];
+  userId?: {
+    firstName: string;
+    lastName: string;
+    email?: string;
+    phone?: string;
+  };
+};
+
+type AdminUser = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  role: "user" | "admin";
+  isActive?: boolean;
+  ordersCount?: number;
+  totalSpent?: number;
+};
+
+type StatCard = {
+  label: string;
+  value: string;
+  icon: ElementType;
+};
+
+type ProductFormState = {
+  name: string;
+  price: string;
+  originalPrice: string;
+  image: string;
+  category: string;
+  occasion: string;
+  color: string;
+  size: string;
+  rating: string;
+  reviews: string;
+  description: string;
+  badge: string;
+  stock: string;
+  sku: string;
+  isNew: boolean;
+};
+
+const emptyProduct: ProductFormState = {
+  name: "",
+  price: "0",
+  originalPrice: "0",
+  image: "",
+  category: "Sarees",
+  occasion: "Wedding",
+  color: "Blue",
+  size: "Free Size",
+  rating: "4.5",
+  reviews: "0",
+  description: "",
+  badge: "",
+  stock: "100",
+  sku: "",
+  isNew: false,
+};
+
+const productTextFields = [
+  "name",
+  "image",
+  "price",
+  "originalPrice",
+  "category",
+  "occasion",
+  "color",
+  "size",
+  "rating",
+  "reviews",
+  "stock",
+  "sku",
+  "badge",
+] as const;
 
 const Admin = () => {
   const { token, user, isAuthenticated, logout } = useAuth();
@@ -34,12 +192,12 @@ const Admin = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [dashboard, setDashboard] = useState<any>(null);
-  const [products, setProducts] = useState<any[]>([]);
-  const [orders, setOrders] = useState<any[]>([]);
-  const [customers, setCustomers] = useState<any[]>([]);
-  const [analytics, setAnalytics] = useState<any>(null);
-  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [dashboard, setDashboard] = useState<AdminDashboardData | null>(null);
+  const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [customers, setCustomers] = useState<AdminUser[]>([]);
+  const [analytics, setAnalytics] = useState<AdminAnalyticsData | null>(null);
+  const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
   const [productForm, setProductForm] = useState(emptyProduct);
   const [settingsForm, setSettingsForm] = useState({ firstName: "", lastName: "", phone: "" });
 
@@ -52,7 +210,7 @@ const Admin = () => {
     if (user) setSettingsForm({ firstName: user.firstName || "", lastName: user.lastName || "", phone: user.phone || "" });
   }, [user]);
 
-  const loadAll = async () => {
+  const loadAll = useCallback(async () => {
     if (!token) {
       setLoading(false);
       return;
@@ -60,57 +218,58 @@ const Admin = () => {
     setLoading(true);
     try {
       const [d, p, o, c, a] = await Promise.all([
-        apiRequest<any>("/admin/dashboard", { token }),
-        apiRequest<any>("/products"),
-        apiRequest<any>("/orders", { token }),
-        apiRequest<any>("/admin/users", { token }),
-        apiRequest<any>("/admin/analytics", { token }),
+        apiRequest<AdminDashboardData>("/admin/dashboard", { token }),
+        apiRequest<{ products: AdminProduct[] }>("/products"),
+        apiRequest<{ orders: AdminOrder[] }>("/orders", { token }),
+        apiRequest<{ users: AdminUser[] }>("/admin/users", { token }),
+        apiRequest<AdminAnalyticsData>("/admin/analytics", { token }),
       ]);
       setDashboard(d || null);
       setProducts(p?.products || []);
       setOrders(o?.orders || []);
       setCustomers(c?.users || []);
       setAnalytics(a || null);
-    } catch (error: any) {
-      toast.error("Failed to load admin data", { description: error.message || "Please try again." });
+    } catch (error) {
+      toast.error("Failed to load admin data", { description: getErrorMessage(error) || "Please try again." });
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     loadAll().catch(() => setLoading(false));
-  }, [token]);
+  }, [loadAll]);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  const stats = useMemo(() => dashboard ? [
+  const stats = useMemo<StatCard[]>(() => dashboard ? [
     { label: "Total Revenue", value: `₹${Number(dashboard?.stats?.totalRevenue || 0).toLocaleString()}`, icon: DollarSign },
     { label: "Orders", value: Number(dashboard?.stats?.orders || 0).toLocaleString(), icon: Package },
     { label: "Customers", value: Number(dashboard?.stats?.customers || 0).toLocaleString(), icon: Users },
     { label: "Products", value: Number(dashboard?.stats?.products || 0).toLocaleString(), icon: Boxes },
   ] : [], [dashboard]);
 
-  const monthlyRevenue = Array.isArray(dashboard?.monthlyRevenue) ? dashboard.monthlyRevenue : [];
-  const maxRevenue = Math.max(...monthlyRevenue.map((x: any) => Number(x.revenue || 0)), 1);
-  const overview = analytics?.overview || {};
-  const averageOrderValue = Math.round(overview.averageOrderValue || 0);
-  const totalOrders = Number(overview.totalOrders || 0);
-  const totalCustomers = Number(overview.totalCustomers || 0);
+  const monthlyRevenue = dashboard?.monthlyRevenue ?? [];
+  const maxRevenue = Math.max(1, ...monthlyRevenue.map((x) => Number(x.revenue || 0)));
+  const overview = analytics?.overview;
+  const averageOrderValue = Math.round(overview?.averageOrderValue || 0);
+  const totalOrders = Number(overview?.totalOrders || 0);
+  const totalCustomers = Number(overview?.totalCustomers || 0);
   const ordersPerCustomer = totalCustomers ? (totalOrders / totalCustomers).toFixed(1) : "0.0";
   const statusEntries = Object.entries(analytics?.orderStatusBreakdown || {});
   const statusTotal = statusEntries.reduce((sum, [, value]) => sum + Number(value || 0), 0);
   const categoryEntries = Object.entries(analytics?.categoryBreakdown || {});
   const categoryTotal = categoryEntries.reduce((sum, [, value]) => sum + Number(value || 0), 0);
   const topProducts = analytics?.topProducts || [];
-  const topRevenue = Math.max(1, ...topProducts.map((item: any) => Number(item.revenue || 0)));
+  const topRevenue = Math.max(1, ...topProducts.map((item) => Number(item.revenue || 0)));
 
-  const setField = (k: string, v: any) => setProductForm((p) => ({ ...p, [k]: v }));
+  const setField = <K extends keyof ProductFormState>(k: K, v: ProductFormState[K]) =>
+    setProductForm((p) => ({ ...p, [k]: v }));
 
-  const editProduct = (p: any) => {
+  const editProduct = (p: AdminProduct) => {
     setEditingProduct(p);
     setProductForm({
       name: p.name, price: String(p.price), originalPrice: String(p.originalPrice), image: p.image, category: p.category,
@@ -139,39 +298,39 @@ const Admin = () => {
       toast.success(editingProduct ? "Product updated" : "Product created");
       resetProduct();
       await loadAll();
-    } catch (error: any) {
-      toast.error("Could not save product", { description: error.message || "Please check the form." });
+    } catch (error) {
+      toast.error("Could not save product", { description: getErrorMessage(error) || "Please check the form." });
     } finally { setSaving(false); }
   };
 
   const removeProduct = async (id: string) => {
     if (!token) return;
     try { await apiRequest(`/products/${id}`, { method: "DELETE", token }); toast.success("Product deleted"); await loadAll(); }
-    catch (error: any) { toast.error("Could not delete product", { description: error.message || "Please try again." }); }
+    catch (error) { toast.error("Could not delete product", { description: getErrorMessage(error) || "Please try again." }); }
   };
 
   const updateOrderStatus = async (id: string, status: string) => {
     if (!token) return;
     try { await apiRequest(`/orders/${id}/status`, { method: "PUT", token, body: JSON.stringify({ status }) }); toast.success("Order updated"); await loadAll(); }
-    catch (error: any) { toast.error("Could not update order", { description: error.message || "Please try again." }); }
+    catch (error) { toast.error("Could not update order", { description: getErrorMessage(error) || "Please try again." }); }
   };
 
-  const updateCustomer = async (id: string, payload: any) => {
+  const updateCustomer = async (id: string, payload: Partial<Pick<AdminUser, "firstName" | "lastName" | "phone" | "role" | "isActive">>) => {
     if (!token) return;
     try { await apiRequest(`/admin/users/${id}`, { method: "PUT", token, body: JSON.stringify(payload) }); toast.success("User updated"); await loadAll(); }
-    catch (error: any) { toast.error("Could not update user", { description: error.message || "Please try again." }); }
+    catch (error) { toast.error("Could not update user", { description: getErrorMessage(error) || "Please try again." }); }
   };
 
   const removeCustomer = async (id: string) => {
     if (!token) return;
     try { await apiRequest(`/admin/users/${id}`, { method: "DELETE", token }); toast.success("User deleted"); await loadAll(); }
-    catch (error: any) { toast.error("Could not delete user", { description: error.message || "Please try again." }); }
+    catch (error) { toast.error("Could not delete user", { description: getErrorMessage(error) || "Please try again." }); }
   };
 
   const saveSettings = async () => {
     if (!token || !user) return;
     try {
-      const data: any = await apiRequest("/auth/profile", { method: "PUT", token, body: JSON.stringify(settingsForm) });
+      const data = await apiRequest<{ user?: { firstName?: string; lastName?: string; phone?: string } }>("/auth/profile", { method: "PUT", token, body: JSON.stringify(settingsForm) });
       const nextUser = {
         ...user,
         firstName: data?.user?.firstName || user.firstName,
@@ -180,8 +339,8 @@ const Admin = () => {
       };
       safeStorage.set("authUser", JSON.stringify(nextUser));
       toast.success("Admin profile updated");
-    } catch (error: any) {
-      toast.error("Could not update settings", { description: error.message || "Please try again." });
+    } catch (error) {
+      toast.error("Could not update settings", { description: getErrorMessage(error) || "Please try again." });
     }
   };
 
@@ -304,7 +463,7 @@ const Admin = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                  {stats.map(({ label, value, icon: Icon }: any) => (
+                  {stats.map(({ label, value, icon: Icon }) => (
                     <div key={label} className="glass-card rounded-3xl p-5 relative overflow-hidden">
                       <div className="flex items-center justify-between mb-4">
                         <div className="w-11 h-11 rounded-2xl bg-muted flex items-center justify-center">
@@ -326,7 +485,7 @@ const Admin = () => {
                       <span className="text-xs text-muted-foreground">Last 6 months</span>
                     </div>
                     <div className="h-52 flex items-end gap-1.5 sm:gap-2 overflow-hidden">
-                      {monthlyRevenue.map((m: any) => (
+                      {monthlyRevenue.map((m) => (
                         <div key={m.month} className="flex-1 group h-full flex items-end">
                           <div
                             className="w-full gradient-gold rounded-t-2xl relative"
@@ -340,7 +499,7 @@ const Admin = () => {
                       ))}
                     </div>
                     <div className="flex justify-between gap-1 mt-3 text-[9px] sm:text-[10px] text-muted-foreground">
-                      {monthlyRevenue.map((m: any) => <span key={m.month}>{m.month}</span>)}
+                      {monthlyRevenue.map((m) => <span key={m.month}>{m.month}</span>)}
                     </div>
                   </div>
 
@@ -360,7 +519,7 @@ const Admin = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {dashboard.recentOrders.map((o: any) => (
+                          {dashboard.recentOrders.map((o) => (
                             <tr key={o._id} className="border-t border-border">
                               <td className="px-5 py-3 font-semibold">{o.id}</td>
                               <td className="px-5 py-3">{o.customer}</td>
@@ -391,10 +550,10 @@ const Admin = () => {
                   <div className="glass-card rounded-3xl p-4 sm:p-5">
                   <h3 className="font-display font-bold mb-4">{editingProduct ? "Edit Product" : "Create Product"}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {["name","image","price","originalPrice","category","occasion","color","size","rating","reviews","stock","sku","badge"].map((f) => (
+                    {productTextFields.map((f) => (
                       <div key={f} className={f === "image" || f === "size" ? "md:col-span-2" : ""}>
                         <label className="text-xs font-semibold mb-1.5 block capitalize">{f}</label>
-                        <input value={(productForm as any)[f]} onChange={(e) => setField(f, e.target.value)} className="w-full bg-muted rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2 ring-primary/30" />
+                        <input value={productForm[f]} onChange={(e) => setField(f, e.target.value)} className="w-full bg-muted rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2 ring-primary/30" />
                       </div>
                     ))}
                     <div className="md:col-span-2">
@@ -428,8 +587,8 @@ const Admin = () => {
                   </div>
                   <div className="glass-card rounded-3xl overflow-hidden">
                     <div className="hidden md:block overflow-x-auto">
-                      <table className="w-full text-sm min-w-[820px]"><thead><tr className="border-b border-border text-xs text-muted-foreground"><th className="text-left px-5 py-3">Order ID</th><th className="text-left px-5 py-3">Customer</th><th className="text-left px-5 py-3">Items</th><th className="text-left px-5 py-3">Amount</th><th className="text-left px-5 py-3">Status</th><th className="text-left px-5 py-3">Date</th></tr></thead><tbody>{orders.map((o) => <tr key={o._id} className="border-b border-border hover:bg-muted/50"><td className="px-5 py-3 font-semibold">{o.orderId}</td><td className="px-5 py-3"><div><p>{o.userId ? `${o.userId.firstName} ${o.userId.lastName}` : "Guest User"}</p><p className="text-xs text-muted-foreground">{o.userId?.email}</p></div></td><td className="px-5 py-3 text-xs text-muted-foreground">{(o.items || []).slice(0,2).map((i:any)=>`${i.name} x${i.quantity}`).join(", ")}</td><td className="px-5 py-3 font-semibold">₹{o.total.toLocaleString()}</td><td className="px-5 py-3"><select value={o.orderStatus} onChange={(e)=>void updateOrderStatus(o._id,e.target.value)} className={`px-2 py-1 rounded-full text-xs font-semibold border-0 ${statusColors[o.orderStatus] || "bg-muted text-foreground"}`}>{["Ordered","Processing","Shipped","Delivered","Cancelled"].map((s)=><option key={s} value={s}>{s}</option>)}</select></td><td className="px-5 py-3 text-muted-foreground">{new Date(o.createdAt).toLocaleDateString()}</td></tr>)}</tbody></table></div>
-                    <div className="grid gap-4 p-5 md:hidden">{orders.map((o) => <div key={o._id} className="border border-border rounded-2xl p-4 space-y-3"><div className="flex items-center justify-between"><p className="font-semibold">{o.orderId}</p><span className="text-xs text-muted-foreground">{new Date(o.createdAt).toLocaleDateString()}</span></div><div><p className="text-sm">{o.userId ? `${o.userId.firstName} ${o.userId.lastName}` : "Guest User"}</p><p className="text-xs text-muted-foreground">{o.userId?.email}</p></div><p className="text-xs text-muted-foreground">{(o.items || []).slice(0,2).map((i:any)=>`${i.name} x${i.quantity}`).join(", ")}</p><div className="flex items-center justify-between"><span className="font-semibold">₹{o.total.toLocaleString()}</span><select value={o.orderStatus} onChange={(e)=>void updateOrderStatus(o._id,e.target.value)} className={`px-2 py-1 rounded-full text-xs font-semibold border-0 ${statusColors[o.orderStatus] || "bg-muted text-foreground"}`}>{["Ordered","Processing","Shipped","Delivered","Cancelled"].map((s)=><option key={s} value={s}>{s}</option>)}</select></div></div>)}</div>
+                      <table className="w-full text-sm min-w-[820px]"><thead><tr className="border-b border-border text-xs text-muted-foreground"><th className="text-left px-5 py-3">Order ID</th><th className="text-left px-5 py-3">Customer</th><th className="text-left px-5 py-3">Items</th><th className="text-left px-5 py-3">Amount</th><th className="text-left px-5 py-3">Status</th><th className="text-left px-5 py-3">Date</th></tr></thead><tbody>{orders.map((o) => <tr key={o._id} className="border-b border-border hover:bg-muted/50"><td className="px-5 py-3 font-semibold">{o.orderId}</td><td className="px-5 py-3"><div><p>{o.userId ? `${o.userId.firstName} ${o.userId.lastName}` : "Guest User"}</p><p className="text-xs text-muted-foreground">{o.userId?.email}</p></div></td><td className="px-5 py-3 text-xs text-muted-foreground">{(o.items || []).slice(0,2).map((i)=>`${i.name} x${i.quantity}`).join(", ")}</td><td className="px-5 py-3 font-semibold">₹{o.total.toLocaleString()}</td><td className="px-5 py-3"><select value={o.orderStatus} onChange={(e)=>void updateOrderStatus(o._id,e.target.value)} className={`px-2 py-1 rounded-full text-xs font-semibold border-0 ${statusColors[o.orderStatus] || "bg-muted text-foreground"}`}>{["Ordered","Processing","Shipped","Delivered","Cancelled"].map((s)=><option key={s} value={s}>{s}</option>)}</select></td><td className="px-5 py-3 text-muted-foreground">{new Date(o.createdAt).toLocaleDateString()}</td></tr>)}</tbody></table></div>
+                    <div className="grid gap-4 p-5 md:hidden">{orders.map((o) => <div key={o._id} className="border border-border rounded-2xl p-4 space-y-3"><div className="flex items-center justify-between"><p className="font-semibold">{o.orderId}</p><span className="text-xs text-muted-foreground">{new Date(o.createdAt).toLocaleDateString()}</span></div><div><p className="text-sm">{o.userId ? `${o.userId.firstName} ${o.userId.lastName}` : "Guest User"}</p><p className="text-xs text-muted-foreground">{o.userId?.email}</p></div><p className="text-xs text-muted-foreground">{(o.items || []).slice(0,2).map((i)=>`${i.name} x${i.quantity}`).join(", ")}</p><div className="flex items-center justify-between"><span className="font-semibold">₹{o.total.toLocaleString()}</span><select value={o.orderStatus} onChange={(e)=>void updateOrderStatus(o._id,e.target.value)} className={`px-2 py-1 rounded-full text-xs font-semibold border-0 ${statusColors[o.orderStatus] || "bg-muted text-foreground"}`}>{["Ordered","Processing","Shipped","Delivered","Cancelled"].map((s)=><option key={s} value={s}>{s}</option>)}</select></div></div>)}</div>
                   </div>
                 </motion.div>
               )}
@@ -570,7 +729,7 @@ const Admin = () => {
                       <span className="text-xs text-muted-foreground">{topProducts.length} products</span>
                     </div>
                     <div className="space-y-4">
-                      {topProducts.map((product: any, index: number) => (
+                      {topProducts.map((product, index: number) => (
                         <div key={product.name} className="flex flex-col gap-3 border-b border-border pb-4 last:border-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between">
                           <div className="flex items-start gap-3">
                             <div className="w-8 h-8 rounded-full gradient-gold text-maroon-dark text-xs font-bold flex items-center justify-center">

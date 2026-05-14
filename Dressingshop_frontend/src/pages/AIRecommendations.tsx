@@ -1,10 +1,11 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Sparkles, Camera, X, Loader2 } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { products, Product } from "@/data/products";
 import { analyzeImage, ImageAnalysis } from "@/services/tensorflowStylist";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 
 const AIRecommendations = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -72,11 +73,11 @@ const AIRecommendations = () => {
         toast.success(`Found ${recommendations.length} matching outfits`, {
           description: `${analysisResult.fashionCategory.replace("-", " ")} | ${analysisResult.occasion}`,
         });
-      } catch (error: any) {
+      } catch (error) {
         setAnalysis(null);
         setResults(null);
         toast.error("Analysis Failed", {
-          description: error.message || "Please try uploading a different image.",
+          description: getErrorMessage(error) || "Please try uploading a different image.",
         });
       } finally {
         setAnalyzing(false);
@@ -144,7 +145,7 @@ const AIRecommendations = () => {
     });
   };
 
-  const onDrop = useCallback((event: React.DragEvent) => {
+  const onDrop = (event: React.DragEvent) => {
     event.preventDefault();
     setDragOver(false);
     const file = event.dataTransfer.files[0];
@@ -152,7 +153,7 @@ const AIRecommendations = () => {
     if (file?.type.startsWith("image/")) {
       handleFile(file);
     }
-  }, []);
+  };
 
   return (
     <div className="min-h-screen">

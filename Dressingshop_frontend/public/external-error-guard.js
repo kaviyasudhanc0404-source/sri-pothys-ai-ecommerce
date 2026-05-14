@@ -6,6 +6,13 @@
     "runtime.lastError",
   ];
 
+  var extensionRequestPrefixes = [
+    "/generate",
+    "/site_integrate",
+    "/site_integration",
+    "/writing",
+  ];
+
   function getMessage(value) {
     if (!value) return "";
     if (typeof value === "string") return value;
@@ -18,12 +25,32 @@
     }
   }
 
+  function getPathPrefix(value) {
+    return value && value.reqInfo && typeof value.reqInfo.pathPrefix === "string"
+      ? value.reqInfo.pathPrefix
+      : "";
+  }
+
+  function isExtensionPermissionError(value) {
+    if (!value || typeof value !== "object") return false;
+
+    var message = getMessage(value).toLowerCase();
+    var dataMessage = value.data && value.data.msg ? String(value.data.msg).toLowerCase() : "";
+    var pathPrefix = getPathPrefix(value);
+
+    return (
+      value.code === 403 &&
+      (message === "permission error" || dataMessage === "permission error") &&
+      extensionRequestPrefixes.indexOf(pathPrefix) !== -1
+    );
+  }
+
   function isKnownExternalNoise(value) {
     var message = getMessage(value);
     var hasKnownMessage = externalNoisePatterns.some(function (pattern) {
       return message.indexOf(pattern) !== -1;
     });
-    return hasKnownMessage || (value && value.errNo === -2 && value.errMsg);
+    return hasKnownMessage || isExtensionPermissionError(value) || (value && value.errNo === -2 && value.errMsg);
   }
 
   window.addEventListener(

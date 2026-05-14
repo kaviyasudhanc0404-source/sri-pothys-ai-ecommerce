@@ -7,6 +7,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { getFallbackProductImage, resolveProductImage } from "@/services/productImage";
+import { getErrorMessage } from "@/lib/utils";
 
 interface QuickPreviewModalProps {
   product: Product | null;
@@ -41,9 +42,9 @@ const QuickPreviewModal = ({ product, onClose }: QuickPreviewModalProps) => {
         description: `${product.name} has been added to your cart`,
       });
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Could not add to cart", {
-        description: error.message || "Please try again.",
+        description: getErrorMessage(error) || "Please try again.",
       });
     }
   };

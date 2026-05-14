@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import ProductCard from "@/components/ProductCard";
 import { fetchProductById, submitProductReview } from "@/services/productCatalog";
 import { getFallbackProductImage, resolveProductImage } from "@/services/productImage";
+import { getErrorMessage } from "@/lib/utils";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -53,11 +54,11 @@ const ProductDetail = () => {
           const liveProduct = await fetchProductById(id);
           if (!cancelled) setProduct(liveProduct);
         }
-      } catch (error: any) {
+      } catch (error) {
         if (!cancelled && !localProduct) {
           setProduct(null);
           toast.error("Could not load product", {
-            description: error.message || "Please go back to the collection and try again.",
+            description: getErrorMessage(error) || "Please go back to the collection and try again.",
           });
         }
       } finally {
@@ -123,9 +124,9 @@ const ProductDetail = () => {
       toast.success("Added to Cart", {
         description: `${qty} x ${product.name} added to your cart`,
       });
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Could not add to cart", {
-        description: error.message || "Please try again.",
+        description: getErrorMessage(error) || "Please try again.",
       });
     }
   };
@@ -195,9 +196,9 @@ const ProductDetail = () => {
       toast.success("Review submitted", {
         description: "Thanks for sharing your feedback.",
       });
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Could not submit review", {
-        description: error.message || "Please try again.",
+        description: getErrorMessage(error) || "Please try again.",
       });
     } finally {
       setReviewSubmitting(false);

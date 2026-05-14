@@ -6,6 +6,10 @@ export const addAddress = async (req, res) => {
     const { name, address, city, state, pincode, phone, isDefault } = req.body;
     const user = await User.findById(req.user.id);
 
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     if (!name || !address || !city || !state || !pincode || !phone) {
       return res.status(400).json({ error: "All address fields are required" });
     }
@@ -45,6 +49,10 @@ export const getAddresses = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
 
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     res.json({
       addresses: user.addresses,
     });
@@ -60,6 +68,11 @@ export const updateAddress = async (req, res) => {
     const { name, address, city, state, pincode, phone, isDefault } = req.body;
 
     const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     const addrIndex = user.addresses.findIndex((addr) => addr._id.toString() === addressId);
 
     if (addrIndex === -1) {
@@ -97,6 +110,11 @@ export const deleteAddress = async (req, res) => {
   try {
     const { addressId } = req.params;
     const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     const initialCount = user.addresses.length;
 
     user.addresses = user.addresses.filter((addr) => addr._id.toString() !== addressId);
@@ -121,6 +139,10 @@ export const addToWishlist = async (req, res) => {
     const { productId } = req.body;
     const user = await User.findById(req.user.id);
 
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     if (user.wishlist.includes(productId)) {
       return res.status(400).json({ error: "Product already in wishlist" });
     }
@@ -142,6 +164,11 @@ export const removeFromWishlist = async (req, res) => {
   try {
     const { productId } = req.body;
     const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     user.wishlist = user.wishlist.filter((id) => id.toString() !== productId);
     await user.save();
 
@@ -158,6 +185,10 @@ export const removeFromWishlist = async (req, res) => {
 export const getWishlist = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate("wishlist");
+
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
 
     res.json({
       wishlist: user.wishlist,
@@ -184,6 +215,10 @@ export const updatePreferences = async (req, res) => {
       { new: true }
     ).select("-password");
 
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     res.json({
       message: "Preferences updated successfully",
       preferences: user.preferences,
@@ -198,8 +233,12 @@ export const getCart = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("cart");
 
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     res.json({
-      items: user?.cart || [],
+      items: user.cart || [],
     });
   } catch (error) {
     console.error(error);
@@ -216,6 +255,11 @@ export const addToCart = async (req, res) => {
     }
 
     const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     const existingIndex = user.cart.findIndex(
       (item) => item.productKey === productKey && item.selectedSize === selectedSize
     );
@@ -253,6 +297,11 @@ export const updateCartItem = async (req, res) => {
     const { itemId } = req.params;
     const { quantity, selectedSize } = req.body;
     const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     const item = user.cart.id(itemId);
 
     if (!item) {
@@ -287,6 +336,11 @@ export const removeFromCart = async (req, res) => {
   try {
     const { itemId } = req.params;
     const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     const item = user.cart.id(itemId);
 
     if (!item) {
@@ -309,6 +363,11 @@ export const removeFromCart = async (req, res) => {
 export const clearCart = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(401).json({ error: "User account not found" });
+    }
+
     user.cart = [];
     await user.save();
 

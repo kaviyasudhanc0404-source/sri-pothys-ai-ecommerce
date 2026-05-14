@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Sparkles, Loader } from "lucide-react";
-import { products } from "@/data/products";
-
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY?.trim();
+import { apiRequest } from "@/services/api";
 
 const quickActions = [
   "Tell me about Sri Pothys",
@@ -12,110 +10,53 @@ const quickActions = [
   "What can I ask here?",
 ];
 
-const featuredProducts = products
-  .slice(0, 12)
-  .map((product) => `- ${product.name}: Rs.${product.price.toLocaleString()} | ${product.category} | ${product.occasion}`)
-  .join("\n");
-
-const categorySummary = Array.from(new Set(products.map((product) => product.category))).join(", ");
-const occasionSummary = Array.from(new Set(products.map((product) => product.occasion))).join(", ");
-
-const SYSTEM_PROMPT = `You are the friendly shopping assistant for the Sri Pothys Silks & Readymades website.
-
-Important store background:
-- Sri Pothys Silks & Readymades shop was started in 2000
-- Shop address: 62, North St, Swamimalai, Kumbakonam, Alavandipuram, Tamil Nadu 612302
-- The shop focuses on sarees, lehengas, suits, men's wear, women's wear, kids wear, kurtis, dresses, shirts, T-shirts, cargo pants, jeans, chinos, jackets, jumpsuits, and festive outfits
-- This chatbot should answer questions about the website, the clothes shown on the website, shopping help, wishlist, cart, orders, checkout, AI stylist, and size selection
-
-Website catalog summary:
-- Main categories on this website: ${categorySummary}
-- Main occasions on this website: ${occasionSummary}
-
-Sample products from the current website catalog:
-${featuredProducts}
-
-Website shopping details:
-- Free shipping on orders above Rs.999
-- 7-day return policy
-- Genuine product promise
-- Users can browse products, add to cart, buy now, place orders, view orders, use wishlist, and use the AI stylist page
-
-Response style:
-- Start naturally with "Vanakkam" when greeting
-- Be helpful, warm, and specific to this website
-- Mention actual product names, categories, colors, and occasions from the website when useful
-- Keep replies concise, usually 2 to 4 sentences
-- If asked about the store, clearly say Sri Pothys Silks & Readymades shop was started in 2000
-- If asked about the address or location, clearly give this exact address: 62, North St, Swamimalai, Kumbakonam, Alavandipuram, Tamil Nadu 612302
-- If asked what the user can ask, say they can ask about products, collections, prices, categories, sizes, orders, cart, wishlist, and AI stylist
-- Do not invent unsupported policies, store branches, or payment details beyond the information above`;
-
-const FALLBACK_BOT_REPLY =
-  "Vanakkam! I can still help you explore sarees, lehengas, kurtis, dresses, men's wear, wishlist, cart, and orders on this website.";
-
 interface Message {
   from: "user" | "bot";
   text: string;
 }
 
+interface ChatbotResponse {
+  reply?: string;
+}
+
 const getLocalResponse = (question: string) => {
   const normalized = question.toLowerCase();
+  const trimmed = normalized.trim();
+
+  if (/^(hi|hello|hey|vanakkam|hai)$/i.test(question.trim())) {
+    return "Hi! I can help with outfit suggestions, sizing, product choices, cart, wishlist, orders, checkout, and the AI Stylist on this website.";
+  }
 
   if (normalized.includes("what can i ask") || normalized.includes("about webpage") || normalized.includes("about website")) {
-    return "Vanakkam! You can ask me about Sri Pothys Silks & Readymades, the clothes shown on this website, sarees, lehengas, men's wear, women's wear, sizes, prices, wishlist, cart, orders, checkout, and the AI Stylist page.";
+    return "You can ask about Sri Pothys Silks & Readymades, products on this website, sarees, lehengas, men's wear, women's wear, sizes, prices, wishlist, cart, orders, checkout, and the AI Stylist page.";
   }
 
   if (normalized.includes("address") || normalized.includes("location") || normalized.includes("shop address") || normalized.includes("where is the shop")) {
-    return "Vanakkam! Sri Pothys Silks & Readymades is located at 62, North St, Swamimalai, Kumbakonam, Alavandipuram, Tamil Nadu 612302.";
+    return "Sri Pothys Silks & Readymades is located at 62, North St, Swamimalai, Kumbakonam, Alavandipuram, Tamil Nadu 612302.";
   }
 
   if (normalized.includes("tell me about sri pothys") || normalized.includes("about sri pothys") || normalized.includes("when started") || normalized.includes("started in")) {
-    return "Vanakkam! Sri Pothys Silks & Readymades shop was started in 2000. The shop address is 62, North St, Swamimalai, Kumbakonam, Alavandipuram, Tamil Nadu 612302, and on this website you can explore sarees, lehengas, suits, kurtis, dresses, men's wear, kids wear, and festive collections.";
+    return "Sri Pothys Silks & Readymades shop was started in 2000. The shop address is 62, North St, Swamimalai, Kumbakonam, Alavandipuram, Tamil Nadu 612302, and this website lets customers explore ethnic wear, festive outfits, cart, wishlist, orders, and AI Stylist features.";
   }
 
-  if (normalized.includes("saree")) {
-    const sarees = products.filter((product) => product.category === "Sarees").slice(0, 4);
-    const sareeText = sarees.map((product) => `${product.name} for Rs.${product.price.toLocaleString()}`).join(", ");
-    return `Vanakkam! We have beautiful sarees on this website like ${sareeText}. You can also check wedding, festival, and party sarees based on your occasion.`;
-  }
-
-  if (normalized.includes("festival")) {
-    const festivalItems = products.filter((product) => product.occasion === "Festival").slice(0, 4);
-    const festivalText = festivalItems.map((product) => `${product.name} for Rs.${product.price.toLocaleString()}`).join(", ");
-    return `Vanakkam! For festival wear on this website, good options include ${festivalText}. These are suitable for festive celebrations and traditional styling.`;
-  }
-
-  if (normalized.includes("men") || normalized.includes("shirt") || normalized.includes("t-shirt") || normalized.includes("cargo") || normalized.includes("jeans")) {
-    const menItems = products.filter((product) => product.gender === "male").slice(0, 5);
-    const menText = menItems.map((product) => `${product.name} at Rs.${product.price.toLocaleString()}`).join(", ");
-    return `Vanakkam! The men's collection on this website includes ${menText}. You can explore casual, formal, wedding, and festival options.`;
-  }
-
-  if (normalized.includes("women") || normalized.includes("kurti") || normalized.includes("dress") || normalized.includes("lehenga")) {
-    const womenItems = products.filter((product) => product.gender === "female").slice(0, 5);
-    const womenText = womenItems.map((product) => `${product.name} at Rs.${product.price.toLocaleString()}`).join(", ");
-    return `Vanakkam! The women's collection on this website includes ${womenText}. You can browse casual, party, festival, and wedding styles.`;
-  }
-
-  if (normalized.includes("size")) {
-    return "Vanakkam! Sizes on this website depend on the product. Sarees usually come in Free Size, while kurtis, tops, dresses, shirts, and men's wear commonly include sizes like S, M, L, XL, and sometimes XXL.";
+  if (trimmed === "help" || normalized.includes("how to use")) {
+    return "Ask a question naturally, like “suggest a festival saree,” “which shirt size fits 180 cm and 75 kg,” or “how do I view my orders?”";
   }
 
   if (normalized.includes("order")) {
-    return "Vanakkam! You can place an order by opening a product, selecting the size and quantity, then using Buy Now or Add to Cart. After checkout, your order is stored and can be viewed in the Orders page.";
+    return "You can place an order by opening a product, selecting size and quantity, then using Buy Now or Add to Cart. After checkout, order details can be viewed from the Orders page.";
   }
 
   if (normalized.includes("wishlist") || normalized.includes("love icon") || normalized.includes("heart icon")) {
-    return "Vanakkam! The heart icon opens your wishlist after login. You can save products you like there and revisit them anytime from the wishlist page.";
+    return "The heart icon saves products to your wishlist after login, so you can revisit favorite items from the Wishlist page.";
   }
 
   if (normalized.includes("cart") || normalized.includes("buy now") || normalized.includes("checkout")) {
-    return "Vanakkam! You can add items to cart or use Buy Now for direct checkout. This website also stores your shopping cart and order details so your shopping flow works properly.";
+    return "Use Add to Cart to collect multiple items, or Buy Now for a faster checkout flow.";
   }
 
   if (normalized.includes("ai stylist") || normalized.includes("ai")) {
-    return "Vanakkam! The AI Stylist page on this website helps analyze your uploaded image and suggest matching outfits based on your style.";
+    return "The AI Stylist page helps analyze an uploaded image and suggest matching outfits based on your style.";
   }
 
   return null;
@@ -126,7 +67,7 @@ const Chatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       from: "bot",
-      text: "Vanakkam! Welcome to Sri Pothys Silks & Readymades. Our shop was started in 2000, and I can help you with the clothes, collections, wishlist, cart, orders, and AI Stylist features on this website.",
+      text: "Hi! I’m the Sri Pothys shopping assistant. Ask me about outfits, sizing, sarees, shirts, wishlist, cart, orders, checkout, or the AI Stylist.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -155,45 +96,24 @@ const Chatbot = () => {
       return;
     }
 
-    if (!GROQ_API_KEY) {
-      setMessages((prev) => [...prev, { from: "bot", text: FALLBACK_BOT_REPLY }]);
-      return;
-    }
-
     setLoading(true);
 
-    const controller = new AbortController();
-
     try {
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const data = await apiRequest<ChatbotResponse>("/chatbot/message", {
         method: "POST",
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${GROQ_API_KEY}`,
-        },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
             ...nextMessages.map((message) => ({
               role: message.from === "user" ? "user" : "assistant",
               content: message.text,
             })),
           ],
-          max_tokens: 300,
-          temperature: 0.5,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("API request failed");
-      }
-
-      const data = await response.json().catch(() => null);
       const botResponse =
-        data?.choices?.[0]?.message?.content ||
-        "Vanakkam! I could not process that properly. Please ask me about products, prices, collections, or shopping help on this website.";
+        data.reply ||
+        "I could not process that properly. Please ask me about products, prices, collections, sizing, or shopping help on this website.";
 
       setMessages((prev) => [...prev, { from: "bot", text: botResponse }]);
     } catch {
@@ -201,7 +121,7 @@ const Chatbot = () => {
         ...prev,
         {
           from: "bot",
-          text: "Vanakkam! I am having trouble connecting right now, but I can still help you explore sarees, lehengas, kurtis, dresses, men's wear, wishlist, cart, and orders on this website.",
+          text: "I am having trouble connecting to the AI service right now. I can still help with basic cart, wishlist, checkout, orders, store address, and AI Stylist questions.",
         },
       ]);
     } finally {
